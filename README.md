@@ -46,6 +46,7 @@ Also depending on the federation type between AWS and the OIDC provider, require
 | ---- | ---- | ---- |
 |  [Google account](https://accounts.google.com/.well-known/openid-configuration)  |  OK  |  -  |
 |  [Keycloak](https://www.keycloak.org)  |  OK  |  OK (Note 1)  |
+|  [OKTA](https://developer.okta.com/)  |  OK  |  -  |
 
 * Note 1: You can't use SAML2 without extension which supports exchanging from access token to SAML2 assertion because Keycloak supports [OAuth 2.0 Token Exchange](https://tools.ietf.org/html/draft-ietf-oauth-token-exchange-15) partially and doesn't support SAML2 assertion yet.
 

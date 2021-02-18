@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"math/rand"
 	"encoding/base64"
 	"fmt"
 	"net"
@@ -23,6 +24,12 @@ var getCredCmd = &cobra.Command{
 	Long:  `Get AWS credentials and out to stdout through your OIDC provider authentication.`,
 	Run:   getCred,
 }
+
+const charset = "abcdefghijklmnopqrstuvwxyz" +
+  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var seededRand *rand.Rand = rand.New(
+  rand.NewSource(time.Now().UnixNano()))
 
 type TokenResponse struct {
 	AccessToken      string `json:"access_token"`
@@ -82,7 +89,7 @@ func getCred(cmd *cobra.Command, args []string) {
 	}
 
 	Writeln("Login successful!")
-	Traceln("ID token: %s", tokenResponse.IDToken)
+	Writeln("ID token: %s", tokenResponse.IDToken)
 
 	awsFedType := client.config.GetString(AWS_FEDERATION_TYPE)
 	maxSessionDurationSecondsString := client.config.GetString(MAX_SESSION_DURATION_SECONDS)
@@ -240,8 +247,20 @@ func createSAMLResponse(client *OIDCClient, samlAssertion string) (string, error
 	return samlResponse, nil
 }
 
+func StringWithCharset(length int, charset string) string {
+  b := make([]byte, length)
+  for i := range b {
+    b[i] = charset[seededRand.Intn(len(charset))]
+  }
+  return string(b)
+}
+
+func String(length int) string {
+  return StringWithCharset(length, charset)
+}
+
 func doLogin(client *OIDCClient) (*TokenResponse, error) {
-	listener, err := net.Listen("tcp", "127.0.0.1:")
+	listener, err := net.Listen("tcp", "127.0.0.1:51162")
 	if err != nil {
 		return nil, errors.Wrap(err, "Cannot start local http server to handle login redirect")
 	}
@@ -262,6 +281,7 @@ func doLogin(client *OIDCClient) (*TokenResponse, error) {
 		QueryParam("redirect_uri", redirect).
 		QueryParam("code_challenge", challenge).
 		QueryParam("code_challenge_method", "S256").
+		QueryParam("state", String(8)).
 		QueryParam("scope", "openid")
 
 	additionalQuery := client.config.GetString(OIDC_AUTHENTICATION_REQUEST_ADDITIONAL_QUERY)
