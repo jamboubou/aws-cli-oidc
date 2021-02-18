@@ -108,7 +108,3 @@ export AWS_SESSION_TOKEN=FQoGZXIvYXdzENz.......
 
 Licensed under the [MIT](/LICENSE) license.
 
-
-## Author
-
-- [Hiroyuki Wada](https://github.com/wadahiro)
