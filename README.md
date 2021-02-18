@@ -53,8 +53,11 @@ Also depending on the federation type between AWS and the OIDC provider, require
 
 ## Install
 
-Download from [Releases page](https://github.com/openstandia/aws-cli-oidc/releases).
+Clone Repo and run below command to generate different dist binary (Windows, Linux and Mac) 
 
+```
+make cross-build
+```
 
 ## Usage
 
